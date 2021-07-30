@@ -109,21 +109,24 @@ def exchange(message):
 def history(message):
     try:
         mes = message.text.split(' ')
+        api = Api(API_KEY)
 
         end_date = date.today()
-        start_date = end_date + timedelta(days=-7)
+        start_date = str(end_date - timedelta(days=7))
 
-        res = get(f"http://api.exchangeratesapi.io/v1/history?access_key={API_KEY}&start_at={str(start_date)}&end_at={str(end_date)}&base={mes[0]}&symbols={mes[-1]}")
-        # res = api.get_rates(target_list=[mes[0], mes[-1]],
-        #                     start_date=str(start_date),
-        #                     end_date=str(end_date))
-        print(res.text)
-        result = res.json()['rates']
+        # res = get(f"http://api.exchangeratesapi.io/v1/history?access_key={API_KEY}&start_date={start_date}&end_date={str(end_date)}&base={mes[0]}&symbols={mes[-1]}")
+        res = api.get_rates(target_list=[mes[0], mes[-1]],
+                            start_date=str(start_date),
+                            end_date=str(end_date))
+        # print(res.text)
+        print(res)
 
-        bot.send_message(message.from_user.id, result)
 
-    except KeyError or ExchangeRatesApiException as err:
+        bot.send_message(message.from_user.id, res)     # res.json()['rates'])
+
+    except ExchangeRatesApiException as err:
         bot.send_message(message.from_user.id, str(err))
+
 
 
 
